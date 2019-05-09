@@ -1,0 +1,11 @@
+- name: Provision VNFs
+  hosts: vnf
+  connection: local
+  gather_facts: no
+  tags:
+    - vnf
+  tasks:
+    - name: Deploy VNFs
+      include_role:
+        name: ansible-nfvis
+        tasks_from: deploy
