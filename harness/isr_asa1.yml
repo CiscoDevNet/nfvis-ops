@@ -12,15 +12,6 @@ all:
       hosts:
         harness:
         dut:
-#    encs:
-#      hosts:
-#        dut:
-    control_host:
-      hosts:
-        host1
-    test_host:
-      hosts:
-        host2
     vnf:
       hosts:
         isrv1:
@@ -40,7 +31,7 @@ all:
             global:
               - network: 192.168.255.0/24
                 fwd_list:
-                  - fwd: 192.168.1.1
+                  - fwd: 192.168.1.2
           nfvis:
             name: "{{ inventory_hostname }}"
             host: "{{ hostvars['dut'].ansible_host }}"

@@ -1,0 +1,20 @@
+nfvis:
+  name: "{{ inventory_hostname }}"
+  host: "{{ hostvars['harness'].ansible_host }}"
+  image: ubuntu
+  flavor: ubuntu-small
+  bootup_time: -1
+#  port_forwarding:
+#    - proxy_port: 20010
+#      source_bridge: 'MGMT'
+  interfaces:
+#    - network: int-mgmt-net
+    - network: wan-net
+    - network: test-wan
+  config_data:
+    - dst: meta-data
+      data: "{{ lookup('template', 'ubuntu/meta-data.j2') }}"
+    - dst: user-data
+      data: "{{ lookup('template', 'ubuntu/user-data.j2') }}"
+    - dst: network-config
+      data: "{{ lookup('template', 'ubuntu/network-config_no-mgmt.j2') }}"

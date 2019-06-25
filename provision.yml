@@ -90,6 +90,7 @@
     state: present
   tags:
     - packages
+    - upload
   roles:
     - ansible-nfvis
   tasks:
