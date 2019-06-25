@@ -1,36 +1,51 @@
 ---
-- name: Prep the control host
+- name: Wait for VNFs to boot (timeout 10min)
   hosts: control_host:test_host
   gather_facts: no
   tags:
-    - control
+    - wait
   tasks:
-    - name: Wait for VNFs to boot (timeout 10min)
-      wait_for:
+    - wait_for:
         port: 22
         host: "{{ ansible_host }}"
         timeout: 600
       delegate_to: localhost
 
+- name: Prep the control host
+  hosts: control_host:test_host
+  gather_facts: no
+  become: yes
+  tags:
+    - control
+  vars:
+    package_list:
+      - iperf3_3.1.3-1_amd64.deb
+      # - libiperf0_3.1.3-1_amd64.deb
+  tasks:
     - name: Copy .deb packages
       copy:
         src: "{{ item }}"
         dest: /tmp
+      loop: "{{ package_list }}"
+
+    - name: Disable apt auto updates
+      systemd:
+        name: "{{ item }}"
+        state: stopped
+        enabled: no
       loop:
-        - libiperf0_3.1.3-1_amd64.deb
-        - iperf3_3.1.3-1_amd64.deb
+        - apt-daily.timer
+        - apt-daily-upgrade.timer
 
     - name: Install .deb packages
-      command: dpkg -i "/tmp/{{ item }}"
-      become: yes
-      loop:
-        - libiperf0_3.1.3-1_amd64.deb
-        - iperf3_3.1.3-1_amd64.deb
+      command: apt install "/tmp/{{ item }}"
+      loop: "{{ package_list }}"
       register: dpkg
 
 - name: Prep the test hosts
   hosts: control_host
   gather_facts: no
+  become: yes
   tags:
     - test
   tasks:
@@ -38,11 +53,9 @@
       copy:
         src: iperf3.service
         dest: /etc/systemd/system
-      become: yes
 
     - name: Make sure a service is running
       systemd:
         name: iperf3
         state: started
         enabled: yes
-      become: yes
