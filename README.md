@@ -22,7 +22,7 @@ pip install -r requirements.txt
 Since `ansible-nfvis` is included as a submodule, a recurse close is needed:
 
 ```yaml
-git clone --recursive git@github.com:CiscoDevNet/nfvis-ops.git
+git clone --recursive https://github.com/CiscoDevNet/nfvis-ops.git
 ```
 
 >Note: See the [ansible-nfvis](https://github.com/CiscoDevNet/ansible-nfvis) Ansible Role for an explanation of the attributes.
