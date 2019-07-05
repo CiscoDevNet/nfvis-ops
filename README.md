@@ -42,7 +42,7 @@ The easiest way to do this is to create the file `harness/group_vars/all/local.y
 ```yaml
 ansible_user: admin
 ansible_password: admin
-license_token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+license_token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ```
 
 >Note: It is recommented that these values be encrypted with Ansible Vault.
