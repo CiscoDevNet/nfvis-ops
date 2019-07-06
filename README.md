@@ -19,6 +19,33 @@ pip install -r requirements.txt
 
 >Note: It is recommended this be done in a python virtual environment
 
+### Running with Docker
+
+The easiest way to address the python and sshpass dependacies is to use the Dockerfile packaged in the repo.  All development and testing
+uses this Dockerfile, so it is the best way to garuntee that the tooling will run as designed
+
+#### Build the Docker container
+
+To build the docker container, run:
+
+```bash
+docker build -t ansible-nfvis .
+```
+
+#### Running the the playbooks in the docker container
+
+To run the playbooks in the docker container:
+
+```bash
+docker run -it --rm -v $PWD:/ps-crn --env PWD="/ps-crn" --env USER="$USER" ansible-nfvis ansible-playbook <playbook> <options>
+```
+
+In order to make this easier, a bash script has also been provided:
+
+```bash
+./play.sh <playbook> <options>
+```
+
 ## Cloning
 
 Since `ansible-nfvis` is included as a submodule, a recurse close is needed:
@@ -50,7 +77,7 @@ license_token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 ## Building Packages
 
-```yaml
+```bash
 ansible-playbook packages.yml
 ```
 
@@ -96,15 +123,18 @@ ansible-playbook packages.yml -e package=asav
 >Note: Since nfvis_deployment inject the config into the deployments, this task does not include any configuration.
 
 ## Provision the NFVIS hosts
-```yaml
+
+```bash
 ansible-playbook -i inventory/harness.yml provision.yml
 ```
+
 * Sets the hostname
 * Sets trusted source
 * Uploads and registers packages
 * Creates VLANs, Bridges, and Networks
 
 The playbook expects a data structure defined as follows:
+
 ### Data Structure
 
 #### VLANs

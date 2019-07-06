@@ -18,31 +18,47 @@ hosts for testing (e.g. source/sync hosts, viptela control plane, etc.)
 ### Setting IP Address of the Harness Hosts
 
 In order to interact with the harness, IP information must be set in harness/harness.yml for the following devices:
+
 * `harness`: Set the values for `ansible_host` and `interfaces.mgmt.ip`. Generally, these values will be the same (with prefix added to the latter) if you want to manage the device via the mgmt interface.
 * `dut`: Set the values for `ansible_host` and `interfaces.mgmt.ip`. Generally, these values will be the same (with prefix added to the latter) if you want to manage the device via the mgmt interface.
 * `test-rtr`: Set the values for `ansible_host`, `ansible_port` and `interfaces.GigabitEthernet2.ip`.  If you want to manage through the
 Harness' mgmt interface, set `ansible_host` to the Harness' mgmt IP address and `ansible_port` the forwarding port.  `interfaces.GigabitEthernet2.ip` must be an IP address that is reacable by a licensing server if licensing is required.
 
+### Building Packages
+
+```bash
+ansible-playbook packages.yml -i harness/harness.yml
+```
+
+## Provision the NFVIS hosts
+
+```bash
+ansible-playbook provision.yml -i harness/harness.yml
+```
+
 ### Building the Harness VNFs
+
 * Deploy VNFs on harness
 
-```
+```bash
 ansible-playbook build.yml -i harness/harness.yml
 ```
 
 ### Prepare the Harness VNFs
+
 * Wait for VMs to boot
 * Install required packages
 
-```
+```bash
 ansible-playbook prep_harness.yml -i harness/harness.yml
 ```
 
 ### Cleaning the Harness VNFs
+
 * Clean VNFs on harness
 
-```
-ansible-playbook build.yml -i harness/harness.yml
+```bash
+ansible-playbook clean.yml -i harness/harness.yml
 ```
 
 ## Architecture Testing
@@ -57,15 +73,26 @@ The scenarios are created through Ansible inventory files that include the assoc
 and the VNFs.  The VNFs are seeded with a template-driven boot-up configuration so that they come up with the required
 configuration for the architecture.  They can also be automated post deployment for more complex deployment scenarios (e.g. setting up the SD-WAN).
 
-### Running an Architecture Scenario
+### Build Architecture
 
-Build architecture
-```
+```bash
 ansible-playbook build.yml -i harness/isr_asa1.yml
 ```
 
-Clean architecture
+#### Test Architecture
+
+* Runs iperf test from test host to control host
+
+```bash
+ansible-playbook iperf_test.yml -i harness/harness.yml -e time=10
 ```
+>Note: The harness inventory is specificed because the test us run between harness VNFs
+
+>Note: iperf testing is limited by the licesned limit of the VNFs.
+
+### Clean Architecture
+
+```bash
 ansible-playbook clean.yml -i harness/isr_asa1.yml
 ```
 
@@ -86,36 +113,47 @@ depends on the cores available on the DUT (i.e. 1 ISRv per core, but configurabl
 ![test_harness](snake_test.png)
 
 ### Build the Snake
+
 * Finds available cores
 * Creates VNFs, bridges, & networks
 
 `ansible-playbook build_snake.yml`
 
-##### Extra Vars
+#### Extra Vars
+
 * `max_vnf`: The maximum number of VNF to spin up on the DUT
 
 `ansible-playbook build_snake.yml -e max_vnf=5`
 
 #### Prepare the Snake
+
 * Get list of snake VNFs from DUT
 * Waits for the VNF to boot
 * Sets Smart Licensing parameters
 * Registers VNF to Smart Licensing
 * Waits for successful registration
 
-`ansible-playbook prep_snake.yml`
-
+```bash
+ansible-playbook prep_snake.yml
+```
 
 #### Test the Snake
+
 * Runs iperf test from test host to control host
 
-`ansible-playbook iperf.yml -e time=600`
+```bash
+ansible-playbook iperf_test.yml -i harness/harness.yml -e time=10
+```
 
-##### Extra Vars
-* `time`: The duration of the iperf test
+#### Extra Vars
+
+* `time`: The duration of the iperf test (default: 60)
 
 #### Clean the Snake
-`ansible-playbook clean_snake.yml`
+
+```bash
+ansible-playbook clean_snake.yml
+```
 
 * Get list of snake VNFs from DUT
 * Deregisters VNF from Smart Licensing

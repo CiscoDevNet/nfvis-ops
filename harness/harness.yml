@@ -1,7 +1,4 @@
 all:
-  # hosts:
-  #   localhost:
-  #     ansible_python_interpreter: /Users/stevenca/Workspaces/nfvis-ops/nfvis.env/bin/python
   children:
     nfvis:
       vars:
