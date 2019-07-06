@@ -79,7 +79,7 @@ configuration for the architecture.  They can also be automated post deployment 
 ansible-playbook build.yml -i harness/isr_asa1.yml
 ```
 
-#### Test Architecture
+### Test Architecture
 
 * Runs iperf test from test host to control host
 
@@ -127,7 +127,7 @@ depends on the cores available on the DUT (i.e. 1 ISRv per core, but configurabl
 > ansible-playbook build_snake.yml -e max_vnf=5`
 > ```
 
-#### Prepare the Snake
+### Prepare the Snake
 
 * Get list of snake VNFs from DUT
 * Waits for the VNF to boot
@@ -139,7 +139,7 @@ depends on the cores available on the DUT (i.e. 1 ISRv per core, but configurabl
 ansible-playbook prep_snake.yml
 ```
 
-#### Test the Snake
+### Test the Snake
 
 * Runs iperf test from test host to control host
 
@@ -155,13 +155,13 @@ ansible-playbook iperf_test.yml -i harness/harness.yml
 > ansible-playbook iperf_test.yml -i harness/harness.yml -e time=600
 >```
 
-#### Clean the Snake
-
-```bash
-ansible-playbook clean_snake.yml
-```
+### Clean the Snake
 
 * Get list of snake VNFs from DUT
 * Deregisters VNF from Smart Licensing
 * Deletes VNFs, bridges, & networks
 * Removes DUT's ssh key from known hosts
+
+```bash
+ansible-playbook clean_snake.yml
+```
