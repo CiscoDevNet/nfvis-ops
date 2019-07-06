@@ -123,15 +123,14 @@ ansible-playbook packages.yml -e package=asav
 >Note: Since nfvis_deployment inject the config into the deployments, this task does not include any configuration.
 
 ## Provision the NFVIS hosts
-
-```bash
-ansible-playbook -i inventory/harness.yml provision.yml
-```
-
 * Sets the hostname
 * Sets trusted source
 * Uploads and registers packages
 * Creates VLANs, Bridges, and Networks
+
+```bash
+ansible-playbook provision.yml
+```
 
 The playbook expects a data structure defined as follows:
 
@@ -172,39 +171,38 @@ nfvis_networks:
     bridge: service
 ```
 
-### Tags
-
-* 'system': Just run the play to set the system settings
-* 'network': Just setup VLANs, bridges, and networks
-* 'packages': Just run the play to upload the packages
-
-```yaml
-ansible-playbook -i inventory/harness.yml provision.yml --tags=packages
-```
-
-### Extra Vars
-
-* 'package': only build the package with the name specified
-
-```yaml
-ansible-playbook -i inventory/harness.yml provision.yml --tags=packages -e package=asav
-```
+> **Tags**
+>
+>* 'system': Just run the play to set the system settings
+>* 'network': Just setup VLANs, bridges, and networks
+>* 'packages': Just run the play to upload the packages
+>
+>```bash
+>ansible-playbook provision.yml --tags=packages
+>```
+>
+> **Extra Vars**
+>
+>* 'package': only build the package with the name specified
+>
+>```bash
+>ansible-playbook provision.yml --tags=packages -e package=asav
+>```
 
 ## Build a topology
-
-```yaml
-ansible-playbook -i inventory/harness.yml build.yml
-```
-
 * Creates VLANs on all hosts in the `encs` group
 * Creates Bridges and Networks on all hosts in the `nfvis` group
 * Deploys the VNFs in the `vnf` group
 
-To limit to a single VNF:
-
 ```yaml
-ansible-playbook -i inventory/harness.yml build.yml --limit=asav
+ansible-playbook build.yml
 ```
+
+> To limit to a single VNF:
+>
+>```bash
+>ansible-playbook build.yml --limit=asav
+>```
 
 ### Data Structure
 
@@ -230,31 +228,30 @@ nfvis:
         data: "{{ lookup('template', 'ubuntu.network-config.j2') }}"
 ```
 
-### Tags
-
-* 'vlan': Just run the play to build the VLANs
-* 'network': Just run the play to build the Networks
-* 'vnf': Just run the play to deploy the VNFs
+> **Tags**
+>
+> * 'vlan': Just run the play to build the VLANs
+> * 'network': Just run the play to build the Networks
+> * 'vnf': Just run the play to deploy the VNFs
 
 ## Clean a Topology
-
-```yaml
-ansible-playbook -i inventory/harness.yml clean.yml
-```
-
 * Deletes the VNFs in the `vnf` group
 * Deletes the Bridges and Networks on all hosts in the `nfvis` group
 * Deletes the VLANs on all hosts in the `encs` group
 
-To limit to a single VNF:
-
-```yaml
-ansible-playbook -i inventory/harness.yml clean.yml --limit=asav
+```bash
+ansible-playbook clean.yml
 ```
 
-### Tags
-
-* 'vlan': Just run the play to clean the VLANs
-* 'network': Just run the play to clean the Networks
-* 'vnf': Just run the play to clean the VNFs
+> To limit to a single VNF:
+>
+>```bash
+>ansible-playbook clean.yml --limit=asav
+> ```
+>
+> **Tags**
+>
+> * 'vlan': Just run the play to clean the VLANs
+> * 'network': Just run the play to clean the Networks
+> * 'vnf': Just run the play to clean the VNFs
 

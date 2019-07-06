@@ -119,11 +119,13 @@ depends on the cores available on the DUT (i.e. 1 ISRv per core, but configurabl
 
 `ansible-playbook build_snake.yml`
 
-#### Extra Vars
-
-* `max_vnf`: The maximum number of VNF to spin up on the DUT
-
-`ansible-playbook build_snake.yml -e max_vnf=5`
+> **Extra Vars**
+>
+> * `max_vnf`: The maximum number of VNF to spin up on the DUT
+> 
+> ```bash
+> ansible-playbook build_snake.yml -e max_vnf=5`
+> ```
 
 #### Prepare the Snake
 
@@ -142,12 +144,16 @@ ansible-playbook prep_snake.yml
 * Runs iperf test from test host to control host
 
 ```bash
-ansible-playbook iperf_test.yml -i harness/harness.yml -e time=10
+ansible-playbook iperf_test.yml -i harness/harness.yml
 ```
 
-#### Extra Vars
-
-* `time`: The duration of the iperf test (default: 60)
+> **Extra Vars**
+>
+> * `time`: The duration of the iperf test (default: 60)
+>
+>```bash
+> ansible-playbook iperf_test.yml -i harness/harness.yml -e time=600
+>```
 
 #### Clean the Snake
 
