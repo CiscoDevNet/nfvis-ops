@@ -40,6 +40,8 @@
   hosts: snake
   gather_facts: no
   connection: network_cli
+  tags:
+    - register
   vars:
     smart_licensing:
       boot_level: ax

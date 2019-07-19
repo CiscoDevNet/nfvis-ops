@@ -124,7 +124,7 @@ depends on the cores available on the DUT (i.e. 1 ISRv per core, but configurabl
 > * `max_vnf`: The maximum number of VNF to spin up on the DUT
 > 
 > ```bash
-> ansible-playbook build_snake.yml -e max_vnf=5`
+> ansible-playbook build_snake.yml -e max_vnf=5
 > ```
 
 ### Prepare the Snake
