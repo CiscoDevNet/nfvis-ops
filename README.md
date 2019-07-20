@@ -64,16 +64,17 @@ The playbook and roles contained herein assume the following credentials are set
 * `ansible_password`: The password to use for NFVIS and/or the VNFs
 * `license_token`: The Smart License token to be used when licesing is required
 
-The easiest way to do this is to create the file `harness/group_vars/all/local.yml` with the following:
+The easiest way to do this is to create the file `group_vars/all/local.yml` with the following:
 
 ```yaml
 ansible_user: admin
 ansible_password: admin
+nfvis_user: admin
+nfvis_password: admin
 license_token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ```
 
 >Note: It is recommented that these values be encrypted with Ansible Vault.
-
 
 ## Building Packages
 

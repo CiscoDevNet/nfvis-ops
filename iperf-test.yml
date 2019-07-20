@@ -1,16 +1,17 @@
 ---
 - name: Run the bandwidth tests
-  hosts: test_host
+  hosts: host1
   gather_facts: no
   roles:
     - ansible-nfvis
   vars:
     time: 60
+    dest: host2
   tags:
     - perf
   tasks:
-    - name: Run bandwidth test to control host
-      command: iperf3 -c {{ hostvars['control'].interfaces.ens4.ip.primary | ipaddr('address') }} -t {{ time }} -J
+    - name: Run bandwidth test from {{ inventory_hostname }} to {{ dest }}
+      command: iperf3 -c {{ hostvars[dest].interfaces.ens4.ip.primary | ipaddr('address') }} -t {{ time }} -J
       register: iperf_command
 
     - set_fact:

@@ -1,18 +1,18 @@
 ---
 - name: Wait for VNFs to boot (timeout 10min)
-  hosts: control_host:test_host
+  hosts: test_host
   gather_facts: no
   tags:
     - wait
   tasks:
     - wait_for:
-        port: 22
+        port: "{{ ansible_port | default('22') }}"
         host: "{{ ansible_host }}"
         timeout: 600
       delegate_to: localhost
 
-- name: Prep the control host
-  hosts: control_host:test_host
+- name: Prep the test hosts
+  hosts: test_host
   gather_facts: no
   become: yes
   tags:
@@ -43,7 +43,7 @@
       register: dpkg
 
 - name: Prep the test hosts
-  hosts: control_host
+  hosts: test_host
   gather_facts: no
   become: yes
   tags:

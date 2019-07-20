@@ -10,7 +10,7 @@
       nfvis_deployment:
         host: "{{ nfvis.host }}"
         user: "{{ nfvis_user }}"
-        password: "{{ ansible_password }}"
+        password: "{{ nfvis_password }}"
         name: "{{ nfvis.name }}"
         state: absent
 
@@ -25,8 +25,8 @@
     - name: Clean Networks
       nfvis_network:
         host: "{{ ansible_host }}"
-        user: "{{ ansible_user }}"
-        password: "{{ ansible_password }}"
+        user: "{{ nfvis_user }}"
+        password: "{{ nfvis_password }}"
         name: "{{ item.key }}"
         bridge: "{{ item.value.bridge }}"
         trunk: "{{ item.value.trunk | default(omit) }}"
@@ -38,8 +38,8 @@
     - name: Clean Bridges
       nfvis_bridge:
         host: "{{ ansible_host }}"
-        user: "{{ ansible_user }}"
-        password: "{{ ansible_password }}"
+        user: "{{ nfvis_user }}"
+        password: "{{ nfvis_password }}"
         name: "{{ item.key }}"
         port: "{{ item.value.port | default(omit) }}"
         state: absent
@@ -60,8 +60,8 @@
     - name: Clean VLANs
       nfvis_vlan:
         host: "{{ ansible_host }}"
-        user: "{{ ansible_user }}"
-        password: "{{ ansible_password }}"
+        user: "{{ nfvis_user }}"
+        password: "{{ nfvis_password }}"
         state: absent
         vlan_id: "{{ item }}"
       loop: "{{ nfvis_vlans | default([]) }}"

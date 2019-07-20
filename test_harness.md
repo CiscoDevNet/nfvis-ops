@@ -13,6 +13,30 @@ The NFVIS Test Harness is an NFVIS host (e.g. Cisco ENCS 5400, UCS, etc) and a s
 The NFVIS Harness host is used as an environment in which to deploy a PXE server, control node, test nodes, and other
 hosts for testing (e.g. source/sync hosts, viptela control plane, etc.)
 
+## Build 3rd Party Hardware ISO
+
+### Requirements for building ISO:
+
+* Place ISO for NFVIS >= 3.12.0 into `images` directory
+
+### Build ISO
+
+```bash
+./build-iso.sh
+```
+
+> **Extra Vars**
+>
+> * `image_dir`: The directory that contains the ISO images (default: `./images`)
+> * `tmp_dir`: The temp directory in which the ISO is created (default: `/tmp`)
+> * `old_iso`: The original ISO
+> * `new_iso`: The new ISO (default: `{{ image_dir }}/nfvis_3phw.iso`)
+> * `nfvis_3phw`: The name of the 3rd party hardware JSON file (default: `nfvis_3phw.json`) 
+> * `volume_id`: (default: `NFVIS3PHW`)
+> ```bash
+> ./build-iso.sh -e old_iso=images/Cisco_NFVIS_BRANCH-3.12.0-257-20190707_165719.iso -e volume_id=NFVIS3PHW_3.12.0
+> ```
+
 ## Provisioning the Harness
 
 ### Setting IP Address of the Harness Hosts
@@ -50,7 +74,7 @@ ansible-playbook build.yml -i harness/harness.yml
 * Install required packages
 
 ```bash
-ansible-playbook prep_harness.yml -i harness/harness.yml
+ansible-playbook prep-harness.yml -i harness/harness.yml
 ```
 
 ### Cleaning the Harness VNFs
@@ -84,7 +108,7 @@ ansible-playbook build.yml -i harness/isr_asa1.yml
 * Runs iperf test from test host to control host
 
 ```bash
-ansible-playbook iperf_test.yml -i harness/harness.yml -e time=10
+ansible-playbook iperf-test.yml -i harness/harness.yml -e time=10
 ```
 >Note: The harness inventory is specificed because the test us run between harness VNFs
 
@@ -124,7 +148,7 @@ depends on the cores available on the DUT (i.e. 1 ISRv per core, but configurabl
 > * `max_vnf`: The maximum number of VNF to spin up on the DUT
 > 
 > ```bash
-> ansible-playbook build_snake.yml -e max_vnf=5
+> ansible-playbook build-snake.yml -e max_vnf=5
 > ```
 
 ### Prepare the Snake
@@ -136,7 +160,7 @@ depends on the cores available on the DUT (i.e. 1 ISRv per core, but configurabl
 * Waits for successful registration
 
 ```bash
-ansible-playbook prep_snake.yml
+ansible-playbook prep-snake.yml
 ```
 
 ### Test the Snake
@@ -144,7 +168,7 @@ ansible-playbook prep_snake.yml
 * Runs iperf test from test host to control host
 
 ```bash
-ansible-playbook iperf_test.yml -i harness/harness.yml
+ansible-playbook iperf-test.yml -i harness/harness.yml
 ```
 
 > **Extra Vars**
@@ -152,7 +176,7 @@ ansible-playbook iperf_test.yml -i harness/harness.yml
 > * `time`: The duration of the iperf test (default: 60)
 >
 >```bash
-> ansible-playbook iperf_test.yml -i harness/harness.yml -e time=600
+> ansible-playbook iperf-test.yml -i harness/harness.yml -e time=600
 >```
 
 ### Clean the Snake
@@ -163,5 +187,5 @@ ansible-playbook iperf_test.yml -i harness/harness.yml
 * Removes DUT's ssh key from known hosts
 
 ```bash
-ansible-playbook clean_snake.yml
+ansible-playbook clean-snake.yml
 ```

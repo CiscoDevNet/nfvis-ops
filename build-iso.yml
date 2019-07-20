@@ -1,0 +1,32 @@
+- hosts: localhost
+  gather_facts: no
+  vars:
+    image_dir: ./images
+    tmp_dir: /tmp
+    old_iso: Cisco_NFVIS_BRANCH-3.12.0-257-20190707_165719.iso
+    new_iso: nfvis_3phw.iso
+    nfvis_3phw: nfvis_3phw.json
+    old_iso_dir: "{{ tmp_dir }}/oldiso"
+    new_iso_dir: "{{ tmp_dir }}/newiso"
+    volume_id: NFVIS3PHW
+  tasks:
+    - name: Create mount point {{ old_iso_dir }}
+      file:
+        path: "{{ old_iso_dir }}"
+        state: directory
+
+    - name: Mount {{ image_dir }}/{{ old_iso }} to {{ old_iso_dir }}
+      command: "/usr/bin/fuseiso {{ image_dir }}/{{ old_iso }} {{ old_iso_dir }}"
+
+    - name: Copy {{ old_iso_dir }} to {{ new_iso_dir }}
+      copy:
+        src: "{{ old_iso_dir }}/"
+        dest: "{{ new_iso_dir }}/"
+
+    - name: Copy {{ nfvis_3phw }} to {{ new_iso_dir }}
+      copy:
+        src: nfvis_3phw.json
+        dest: "{{ new_iso_dir }}"
+
+    - name: Create {{ image_dir }}/{{ new_iso }} from {{ new_iso_dir }}
+      command: "/usr/bin/mkisofs -V {{ volume_id }} -J -r -o {{ image_dir }}/{{ new_iso }} {{ new_iso_dir }}"
