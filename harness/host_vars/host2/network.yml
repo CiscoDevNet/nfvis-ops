@@ -1,8 +1,9 @@
+ansible_python_interpreter: /usr/bin/python3
 ansible_host: "{{ hostvars['harness'].ansible_host }}"
 ansible_port: 20012
-ansible_user: ubuntu
+ansible_user: fedora
 interfaces:
-  ens4:
+  eth1:
     enabled: true
     ip:
       primary: 192.168.0.10/24

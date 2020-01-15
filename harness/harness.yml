@@ -1,81 +1,26 @@
 all:
   children:
     nfvis:
-      hosts:           
-        dut:
-          ansible_host: 192.133.177.26
-          nfvis_networks:
-            test-wan:
-              bridge: lan-br
-              trunk: no
-              vlan: 4000
-            test-lan:
-              bridge: lan-br
-              trunk: no
-              vlan: 4001            
-          interfaces:
-            mgmt:
-              ip:
-                primary: 192.133.177.26/25
-                gateway: 192.133.177.1
+      # hosts:           
+      #   dut:
       children:
         encs:
           hosts:
             harness:
-              ansible_host: 192.133.177.18
-              nfvis_networks:
-                test-wan:
-                  bridge: lan-br
-                  trunk: no
-                  vlan: 4000
-                test-lan:
-                  bridge: lan-br
-                  trunk: no
-                  vlan: 4001  
-              interfaces:
-                mgmt:
-                  ip:
-                    primary: 192.133.177.18/25
-                    gateway: 192.133.177.1   
+    dut_host:
+      hosts:
+        dut:
     vnf:
       hosts:
         host1:
-        host2:
+        # host2:
         # nat-rtr:
-        #   ansible_host: 192.133.177.18
-        #   ansible_port: 20000
-        #   interfaces:
-        #     GigabitEthernet2:
-        #       enabled: true
-        #       nat: outside
-        #       ip:
-        #         primary: 192.133.177.27/25
-        #         gateway: 192.133.177.1
-        #     GigabitEthernet3:
-        #       enabled: true
-        #       nat: inside
-        #       ip:
-        #         primary: 192.168.0.1/24
-        # control:
-        #   ansible_host: 192.133.177.28
-        #   ansible_user: ubuntu
-        #   interfaces:
-        #     ens3:
-        #       enabled: true
-        #       ip:
-        #         primary: 192.133.177.28/25
-        #         gateway: 192.133.177.1
-        #     ens4:
-        #       enabled: true
-        #       ip:
-        #         primary: 192.168.0.11/24
-        #       routes:
-        #         - network: 192.168.0.0/16
-        #           gateway: 192.168.0.2
+        control:
+          ansible_python_interpreter: /usr/bin/python3
     test_host:
       hosts:
         host1:
-        host2:
+        # host2:
     control_host:
       hosts:
         control:

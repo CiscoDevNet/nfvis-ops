@@ -30,11 +30,11 @@ hosts for testing (e.g. source/sync hosts, viptela control plane, etc.)
 > * `image_dir`: The directory that contains the ISO images (default: `./images`)
 > * `tmp_dir`: The temp directory in which the ISO is created (default: `/tmp`)
 > * `old_iso`: The original ISO
-> * `new_iso`: The new ISO (default: `{{ image_dir }}/nfvis_3phw.iso`)
+> * `new_iso`: The new ISO (default: `nfvis_3phw.iso`)
 > * `nfvis_3phw`: The name of the 3rd party hardware JSON file (default: `nfvis_3phw.json`) 
 > * `volume_id`: (default: `NFVIS3PHW`)
 > ```bash
-> ./build-iso.sh -e old_iso=images/Cisco_NFVIS_BRANCH-3.12.0-257-20190707_165719.iso -e volume_id=NFVIS3PHW_3.12.0
+> ./build-iso.sh -e old_iso=Cisco_NFVIS_BRANCH-3.12.0-257-20190707_165719.iso -e volume_id=NFVIS3PHW_3.12.0
 > ```
 
 ## Provisioning the Harness

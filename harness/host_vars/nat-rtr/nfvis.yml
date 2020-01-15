@@ -12,7 +12,7 @@ nfvis:
     - network: test-wan
   port_forwarding:
     - proxy_port: "{{ ansible_port }}"
-      source_bridge: 'MGMT'
+      source_bridge: "{{ harness_mgmt_br }}"
   config_data:
     - dst: iosxe_config.txt
       data: "{{ lookup('template', 'ios/nfvis.j2') }}"

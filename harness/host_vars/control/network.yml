@@ -1,0 +1,21 @@
+ansible_host: 192.133.177.28
+ansible_user: fedora
+interfaces:
+  eth0:
+    enabled: true
+    ip:
+      primary: 192.133.177.28/25
+      gateway: 192.133.177.1
+  eth1:
+    enabled: true
+    ip:
+      primary: 192.168.0.1/24
+    routes:
+      - network: 192.168.0.0/16
+        gateway: 192.168.0.2
+pxe_dhcp_interface: eth0
+pxe_dhcp_network: "{{ interfaces[pxe_interface].ip.primary | ipaddr('network') }}"
+pxe_dhcp_gateway: "{{ interfaces[pxe_interface].ip.gateway }}"
+# For a range:
+#  pxe_dhcp_range: 192.168.0.50,192.168.0.150,12h
+pxe_dhcp_range: static

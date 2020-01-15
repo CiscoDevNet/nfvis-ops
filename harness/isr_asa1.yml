@@ -46,7 +46,7 @@ all:
               - network: service
             port_forwarding:
               - proxy_port: "{{ ansible_port }}"
-                source_bridge: 'wan-br'
+                source_bridge: "{{ dut_mgmt_br }}"
             config_data:
               - dst: iosxe_config.txt
                 data: "{{ lookup('template', 'ios/nfvis.j2') }}"
@@ -84,7 +84,7 @@ all:
               - network: test-lan
             port_forwarding:
               - proxy_port: "{{ ansible_port }}"
-                source_bridge: 'wan-br'
+                source_bridge: "{{ dut_mgmt_br }}"
             config_data:
               - dst: day0-config
                 data: "{{ lookup('template', 'asa/nfvis.j2') }}"
