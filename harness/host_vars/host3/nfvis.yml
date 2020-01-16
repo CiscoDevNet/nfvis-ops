@@ -1,0 +1,19 @@
+nfvis:
+  name: "{{ inventory_hostname }}"
+  host: "{{ hostvars['harness'].ansible_host }}"
+  image: fedora
+  flavor: fedora-small
+  bootup_time: 600
+  port_forwarding:
+    - proxy_port: "{{ ansible_port }}"
+      source_bridge: "{{ harness_mgmt_br }}"
+  interfaces:
+    - network: int-mgmt-net
+    # - network: test-wan
+  config_data:
+    - dst: meta-data
+      data: "{{ lookup('template', 'fedora/meta-data.j2') }}"
+    - dst: user-data
+      data: "{{ lookup('template', 'fedora/user-data.j2') }}"
+    - dst: network-config
+      data: "{{ lookup('template', 'fedora/network-config.j2') }}"

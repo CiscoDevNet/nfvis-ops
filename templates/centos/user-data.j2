@@ -1,0 +1,13 @@
+#cloud-config
+chpasswd: { expire: False }
+password: Passw0rd
+# ssh_authorized_keys:
+# - ssh-rsa SSH-paste-the-rest-of-the-public-key-here-assumes-you-have-the-private-key
+# ssh_pwauth: False
+# timezone: US/Pacific
+# users:
+# - default
+network-interfaces: |
+  iface eth0 inet static
+  address ${NICID_0_IP_ADDRESS}
+  netmask ${NICID_0_NETMASK}

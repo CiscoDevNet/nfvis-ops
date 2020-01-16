@@ -1,2 +1,3 @@
+*.retry
 /images/*
 /group_vars/all/local.yml

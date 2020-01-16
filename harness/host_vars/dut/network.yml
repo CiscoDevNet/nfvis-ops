@@ -1,0 +1,16 @@
+ansible_host: 192.133.177.26
+pxe_mac: "00:30:64:30:9f:6b"
+nfvis_networks:
+  test-wan:
+    bridge: wan-br
+    trunk: no
+    vlan: 4000
+  test-lan:
+    bridge: lan-br
+    trunk: no
+    vlan: 4001            
+interfaces:
+  mgmt:
+    ip:
+      primary: 192.133.177.26/25
+      gateway: 192.133.177.1

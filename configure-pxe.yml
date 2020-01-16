@@ -1,0 +1,135 @@
+- hosts: control
+  become: yes
+  vars:
+    harness_files_dir: "{{ playbook_dir }}/images"
+    nfvis_iso_file: nfvis_3phw.iso
+    pxe_root: /pxeroot
+  tasks:
+    - debug:
+        msg: "PXE Server IP: {{ ansible_host }}"
+      
+    - name: Install the required packages
+      package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - dnsmasq
+        - nfs-utils
+        - python3-pip
+        - syslinux
+        - iptables
+
+    - name:
+      pip:
+        name: ansible
+
+    - name: Create {{ pxe_root }}
+      file:
+        path: "{{ pxe_root }}"
+        state: directory
+
+    - name: Copy PXE files
+      copy:
+        src: "/usr/share/syslinux/{{ item }}"
+        remote_src: yes
+        dest: "{{ pxe_root }}/"
+      loop:
+        - pxelinux.0
+        - vesamenu.c32
+        - ldlinux.c32
+        - libcom32.c32
+        - libutil.c32
+
+    - name: Copy NFVIS ISO
+      copy:
+        src: "{{ harness_files_dir }}/{{ nfvis_iso_file }}"
+        dest: /tmp
+
+    - name: Mount the NFVIS ISO
+      mount:
+        path: /mnt
+        src: "/tmp/{{ nfvis_iso_file }}"
+        fstype: iso9660
+        opts: ro,noauto
+        state: mounted
+
+    - name: Create {{ pxe_root }}/os
+      file:
+        path: "{{ pxe_root }}/os"
+        state: directory
+
+    - name: Copy ISO file to {{ pxe_root }}/os
+      shell: "find . -depth -print | cpio -pdmu {{ pxe_root }}/os"
+      args:
+        chdir: /mnt
+        creates: "{{ pxe_root }}/os/ks.cfg"      
+
+    - name: Copy nfvis_3phw.json
+      copy:
+        src: nfvis_3phw.json
+        dest: "{{ pxe_root }}/os" 
+
+    - name: Copy PXE Files
+      copy:
+        src: "{{ pxe_root }}/os/EFI/BOOT/{{ item }}"
+        dest: "{{ pxe_root }}"
+        remote_src: yes
+      loop:
+        - BOOTX64.EFI
+        - grubx64.efi
+
+    - name: Copy grub.cfg
+      copy:
+        content: "{{ lookup('template', 'grub.cfg.j2') }}"
+        dest: "{{ pxe_root }}/grub.cfg"
+
+    - name: Copy dnsmasq.conf
+      copy:
+        content: "{{ lookup('template', 'dnsmasq.conf.j2') }}"
+        dest: /etc/dnsmasq.conf
+
+    - name: Copy exports
+      copy:
+        content: "{{ lookup('template', 'exports.j2') }}"
+        dest: /etc/exports
+
+    - name: Create {{ pxe_root }}/pxelinux.cfg
+      file:
+        path: "{{ pxe_root }}/pxelinux.cfg"
+        state: directory
+
+    - name: Copy pxelinux.cfg/default
+      copy:
+        content: "{{ lookup('template', 'default.j2') }}"
+        dest: "{{ pxe_root }}/pxelinux.cfg/default"
+
+    # - name: Copy nginx.conf
+    #   copy:
+    #     content: "{{ lookup('template', 'nginx.conf.j2') }}"
+    #     dest: /etc/nginx/nginx.conf
+
+    - name: Create Iptables NAT chain
+      iptables:
+        table: nat
+        chain: POSTROUTING
+        out_interface: eth0
+        source: 192.168.0.0/16
+        # destination: '{{ masquerade_destination }}'
+        jump: MASQUERADE
+        # protocol: '{{ masquerade_protocol }}'
+        comment: Ansible NAT Masquerade
+
+    - name: Enable IPv4 forwarding
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: 1
+        state: present
+        reload: True
+
+    - name: Restart services to pickup config changes
+      systemd:
+        state: restarted
+        name: "{{ item }}"
+      loop:
+        - dnsmasq
+        - nfs        
