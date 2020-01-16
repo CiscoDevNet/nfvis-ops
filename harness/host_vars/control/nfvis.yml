@@ -1,16 +1,17 @@
 nfvis:
   name: "{{ inventory_hostname }}"
   host: "{{ hostvars['harness'].ansible_host }}"
-  image: fedora
-  flavor: fedora-small
+  image: centos
+  flavor: centos-small
   bootup_time: -1
   interfaces:
     - network: wan-net
+    - network: test-lan
     - network: test-wan
   config_data:
     - dst: meta-data
-      data: "{{ lookup('template', 'fedora/meta-data.j2') }}"
+      data: "{{ lookup('template', 'centos/meta-data.j2') }}"
     - dst: user-data
-      data: "{{ lookup('template', 'fedora/user-data.j2') }}"
+      data: "{{ lookup('template', 'centos/user-data.j2') }}"
     - dst: network-config
-      data: "{{ lookup('template', 'fedora/network-config_no-mgmt.j2') }}"
+      data: "{{ lookup('template', 'centos/network-config_no-mgmt.j2') }}"

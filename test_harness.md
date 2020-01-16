@@ -45,8 +45,6 @@ In order to interact with the harness, IP information must be set in harness/har
 
 * `harness`: Set the values for `ansible_host` and `interfaces.mgmt.ip`. Generally, these values will be the same (with prefix added to the latter) if you want to manage the device via the mgmt interface.
 * `dut`: Set the values for `ansible_host` and `interfaces.mgmt.ip`. Generally, these values will be the same (with prefix added to the latter) if you want to manage the device via the mgmt interface.
-* `test-rtr`: Set the values for `ansible_host`, `ansible_port` and `interfaces.GigabitEthernet2.ip`.  If you want to manage through the
-Harness' mgmt interface, set `ansible_host` to the Harness' mgmt IP address and `ansible_port` the forwarding port.  `interfaces.GigabitEthernet2.ip` must be an IP address that is reacable by a licensing server if licensing is required.
 
 ### Building Packages
 
@@ -100,7 +98,7 @@ configuration for the architecture.  They can also be automated post deployment 
 ### Build Architecture
 
 ```bash
-ansible-playbook build.yml -i harness/isr_asa1.yml
+ansible-playbook build.yml -i harness/isr_asa1.yml 
 ```
 
 ### Test Architecture
@@ -117,8 +115,9 @@ ansible-playbook iperf-test.yml -i harness/harness.yml -e time=10
 ### Clean Architecture
 
 ```bash
-ansible-playbook clean.yml -i harness/isr_asa1.yml
+ansible-playbook clean.yml -i harness/isr_asa1.yml -l dut,vnf
 ```
+>Note: must limit, otherwise you will get failures when trying to delete networks from the harness
 
 ## Load Testing
 

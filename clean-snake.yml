@@ -4,6 +4,7 @@
   vars:
     state: present
     snake_tag: snake
+    ansible_ssh_user: centos
   roles:
     - ansible-nfvis
   tags:
@@ -42,6 +43,8 @@
 - hosts: snake_test
   connection: network_cli
   gather_facts: no
+  become: yes
+  vars:
   tags:
     - deregister
   roles:
@@ -58,6 +61,7 @@
   vars:
     state: present
     snake_tag: snake
+    ansible_ssh_user: centos
   roles:
     - ansible-nfvis
   tags:
@@ -120,6 +124,19 @@
     until: "'OK' in bridge_results.response"
     retries: 6
     delay: 10
+
+  - name: Clean Test Networks
+    nfvis_network:
+      host: "{{ ansible_host }}"
+      user: "{{ ansible_user }}"
+      password: "{{ ansible_password }}"
+      name: "{{ item.key }}"
+      bridge: "{{ item.value.bridge }}"
+      trunk: "{{ item.value.trunk | default(omit) }}"
+      vlan: "{{ item.value.vlan | default(omit) }}"
+      state: absent
+    register: results
+    with_dict: "{{ nfvis_networks | default({}) }}"
 
   - name: Remove DUT from known_hosts
     known_hosts:

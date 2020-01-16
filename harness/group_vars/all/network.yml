@@ -1,3 +1,12 @@
 dns_servers:
   - 8.8.8.8
   - 8.8.4.4
+
+test_cidr_block: 192.168.0.0/17
+test_wan_bridge: test-wan-br
+test_lan_bridge: test-lan-br
+test_wan_cidr: "{{ test_cidr_block | ipsubnet(24, -1) }}"
+test_wan_vlan: 4000
+test_lan_cidr: "{{ test_cidr_block | ipsubnet(24, 0) }}"
+test_lan_vlan: 4001
+service_cidr: "{{ test_cidr_block | ipsubnet(24, 1) }}"

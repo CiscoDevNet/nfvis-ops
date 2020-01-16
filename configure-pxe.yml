@@ -19,9 +19,9 @@
         - syslinux
         - iptables
 
-    - name:
-      pip:
-        name: ansible
+    #- name:
+    #  pip:
+    #    name: ansible
 
     - name: Create {{ pxe_root }}
       file:
@@ -36,9 +36,9 @@
       loop:
         - pxelinux.0
         - vesamenu.c32
-        - ldlinux.c32
-        - libcom32.c32
-        - libutil.c32
+        #- ldlinux.c32
+        #- libcom32.c32
+        #- libutil.c32
 
     - name: Copy NFVIS ISO
       copy:
@@ -125,6 +125,15 @@
         value: 1
         state: present
         reload: True
+
+    - name: set selinux permissions
+      sefcontext:
+        target: "{{ pxe_root }}(/.*)?"
+        setype: dnsmasq_etc_t
+        state: present
+
+    - name: Apply new SELinux file context to filesystem
+      command: restorecon -irv "{{ pxe_root }}"
 
     - name: Restart services to pickup config changes
       systemd:

@@ -1,0 +1,8 @@
+ansible_user: admin
+ansible_password: admin
+nfvis_user: admin
+nfvis_password: admin
+ansible_network_os: ios
+license_token: SMART_LICENSE_TOKEN
+harness_mgmt_br: MGMT
+dut_mgmt_br: wan-br

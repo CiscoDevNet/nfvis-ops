@@ -59,6 +59,8 @@
   tags:
     - system
   tasks:
+    - debug:
+        var: interfaces
     - assert:
         that:
           - interfaces.mgmt.ip.primary is defined

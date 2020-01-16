@@ -12,15 +12,14 @@ all:
         dut:
     vnf:
       hosts:
-        host1:
-        # host2:
-        # nat-rtr:
+        hostlan1:
+        hostwan1:
         control:
-          ansible_python_interpreter: /usr/bin/python3
+          #ansible_python_interpreter: /usr/bin/python3
     test_host:
       hosts:
-        host1:
-        # host2:
+        hostlan1:
+        hostwan1:
     control_host:
       hosts:
         control:

@@ -5,11 +5,35 @@
   tags:
     - wait
   tasks:
+    - debug:
+        var: ansible_host
     - wait_for:
         port: "{{ ansible_port | default('22') }}"
         host: "{{ ansible_host }}"
         timeout: 600
-      delegate_to: localhost
+      delegate_to: control
+
+- name: Enable NAT
+  hosts: control
+  become: yes
+  tasks:
+    - name: Enable IPv4 forwarding
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: yes
+
+    - name: Create Iptables NAT chain
+      iptables:
+        table: nat
+        chain: POSTROUTING
+        out_interface: eth0
+        source: 0.0.0.0/0
+        destination: 0.0.0.0/0
+        jump: MASQUERADE
+        protocol: all
 
 - name: Prep the test hosts
   hosts: test_host
@@ -19,8 +43,7 @@
     - control
   vars:
     package_list:
-      - libuuid-devel-2.32.1-1.fc28.x86_64.rpm
-      - iperf3-3.5-1.fc28.src.rpm
+      - iperf3-3.1.7-2.el7.x86_64.rpm
 
   tasks:
     - name: Copy packages
@@ -63,10 +86,10 @@
   tags:
     - test
   tasks:
-    # - name: Copy iperf systemd
-    #   copy:
-    #     src: iperf3.service
-    #     dest: /etc/systemd/system
+    - name: Copy iperf systemd
+      copy:
+        src: iperf3.service
+        dest: /etc/systemd/system
 
     - name: Make sure a service is running
       systemd:
