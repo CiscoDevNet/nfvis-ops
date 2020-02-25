@@ -1,0 +1,29 @@
+ansible_host: 192.133.177.58
+netmask: 25
+pxe_mac: "00:60:e0:6b:68:cf"
+pxe_ip: "{{ test_lan_cidr | ipaddr('net') | ipaddr('5') | ipaddr('address') }}"
+nfvis_briges:
+  service:
+nfvis_networks:
+  test-wan:
+    bridge: wan-br
+    trunk: no
+    vlan: "{{ test_wan_vlan }}"
+  test-lan:
+    bridge: lan-br
+    trunk: no
+    vlan: "{{ test_lan_vlan }}"            
+  service:
+     bridge: service
+interfaces:
+  mgmt:
+    ip:
+      primary: "{{ ansible_host }}/{{ netmask }}"
+      gateway: "{{ ansible_host }}/{{ netmask }} | ipaddr('net') | ipaddr('1') }}"
+
+# this is the port we specify as the pxe_mac
+test_wan_switchport: gi1/3
+test_wan_localport: eth16
+
+test_lan_switchport: gi1/2
+test_lan_localport: eth17

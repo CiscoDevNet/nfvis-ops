@@ -1,0 +1,16 @@
+ansible_host: 192.133.177.18
+
+nfvis_networks:
+  test-lan:
+    bridge: lan-br
+    trunk: no
+    vlan: "{{ test_lan_vlan }}"
+  test-wan:
+    bridge: lan-br
+    trunk: no
+    vlan: "{{ test_wan_vlan }}"  
+interfaces:
+  mgmt:
+    ip:
+      primary: 192.133.177.18/25
+      gateway: 192.133.177.1

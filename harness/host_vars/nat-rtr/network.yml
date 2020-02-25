@@ -1,3 +1,18 @@
+ansible_host: 192.133.177.18
+ansible_port: 20000
+interfaces:
+  GigabitEthernet2:
+    enabled: true
+    nat: outside
+    ip:
+      primary: 192.133.177.27/25
+      gateway: 192.133.177.1
+  GigabitEthernet3:
+    enabled: true
+    nat: inside
+    ip:
+      primary: 192.168.0.1/24
+
 nat:
   - type: inside
     source: list

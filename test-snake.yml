@@ -1,16 +1,16 @@
 ---
 - name: Run the bandwidth tests
-  hosts: test_host
+  hosts: hostlan1
   gather_facts: no
   roles:
     - ansible-nfvis
   vars:
-    time: 60
+    time: 30
   tags:
     - perf
   tasks:
-    - name: Run bandwidth test to control host
-      command: iperf3 -c {{ hostvars['control'].interfaces.ens4.ip.primary | ipaddr('address') }} -t {{ time }} -J
+    - name: Run bandwidth test to WAN host
+      command: iperf3 -c {{ hostvars['hostwan1'].interfaces.eth1.ip.primary | ipaddr('address') }} -t {{ time }} -J
       register: iperf_command
 
     - set_fact:

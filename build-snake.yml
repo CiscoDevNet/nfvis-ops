@@ -1,10 +1,40 @@
 - hosts: dut
+  gather_facts: no
+  connection: local
+  vars:
+    state: present
+    ansible_ssh_user: centos
+  tags:
+    - packages
+    - upload
+  roles:
+    - ansible-nfvis
+  tasks:
+    - name: Limit to specific package
+      set_fact:
+        nfvis_package_list: "{{ nfvis_package_list | selectattr('name', 'equalto', package) | list }}"
+      when: package is defined
+
+    - name: Package
+      nfvis_package:
+        host: "{{ ansible_host }}"
+        user: "{{ ansible_user }}"
+        password: "{{ ansible_password }}"
+        file: "{{ nfvis_package_dir }}/{{ item.name }}.tar.gz"
+        name: "{{ item.name }}"
+        state: "{{ item.state | default(state) }}"
+        dest: "/data/intdatastore/uploads"
+      register: upload_results
+      loop: "{{ nfvis_package_list }}"
+
+- hosts: dut
   connection: local
   gather_facts: no
   vars:
     state: present
     snake_tag: snake
     max_vnf: 255
+    ansible_ssh_user: centos
   roles:
     - ansible-nfvis
   tags:
@@ -39,6 +69,20 @@
       vnf_total: "{{ num_snakes }}"
     with_sequence: start=1 end="{{ num_snakes }}"
 
+  - name: Build Networks
+    nfvis_network:
+      host: "{{ ansible_host }}"
+      user: "{{ ansible_user }}"
+      password: "{{ ansible_password }}"
+      name: "{{ item.key }}"
+      bridge: "{{ item.value.bridge }}"
+      trunk: "{{ item.value.trunk | default(omit) }}"
+      vlan: "{{ item.value.vlan | default(omit) }}"
+      state: "{{ state }}"
+    register: results
+    with_dict: "{{ nfvis_networks | default({}) }}"
+    
+
 - hosts: snake_test
   connection: local
   gather_facts: no
@@ -47,82 +91,109 @@
   vars:
     snake_tag: snake
     mgmt_bridge: 'wan-br'
-    test_wan_net: test-wan
-    test_lan_net: test-lan
-    wan_net: test-wan
-    lan_net: test-lan
-    lan_cidr_block: 192.168.0.0/16
-    dest_lan_cidr: "{{ lan_cidr_block | ipsubnet(24, 255) }}"
-    lan_cidr: "{{ lan_cidr_block | ipsubnet(24, 255) }}"
+    test_south_net: test-lan
+    #north_net: test-wan
+    #south_net: test-lan
+    north_cidr: "{{ test_wan_cidr }}"
+    south_cidr: "{{ test_lan_cidr }}"
     vnf_image: isrv_16.09.01a_noll
     vnf_flavor: isrv-small
     vnf_template: ios/cli.j2
     state: present
+    ansible_ssh_user: centos
   tasks:
-    - name: Calculate wan-net
+    - name: Calculate north-net (all but first)
       set_fact:
-        wan_net: "{{ snake_tag }}-net{{ vnf_number|int - 1 }}"
+        north_net: "{{ snake_tag }}-net{{ vnf_number|int - 1 }}"
+        north_cidr: "{{ test_cidr_block | ipsubnet(24, vnf_number|int - 1) }}"
       when: vnf_number|int > 1
 
-    - name: Calculate lan-net
+    - name: Calculate north-net (first)
       set_fact:
-        lan_net: "{{ snake_tag }}-net{{ vnf_number }}"
-        lan_cidr: "{{ lan_cidr_block | ipsubnet(24, vnf_number) }}"
+        north_net: test-wan
+        north_cidr: "{{ test_wan_cidr | ipaddr(2) }}"
+      when: vnf_number|int == 1
+
+    - name: Calculate south-net (all but last)
+      set_fact:
+        south_net: "{{ snake_tag }}-net{{ vnf_number }}"
+        south_cidr: "{{ test_cidr_block | ipsubnet(24, vnf_number) }}"
       when: vnf_number != vnf_total
+
+    - name: Calculate south-net (last)
+      set_fact:
+        south_net: test-lan
+        south_cidr: "{{ test_lan_cidr | ipaddr(2) }}"
+      when: vnf_number == vnf_total
 
     - name: Calculate network addresses
       set_fact:
-        lan_ip: "{{ lan_cidr | ipaddr(1) }}"
-        lan_route: "{{ lan_cidr | ipaddr(2) }}"
-        wan_cidr: "{{ lan_cidr_block | ipsubnet(24, vnf_number|int - 1) }}"
-        wan_ip: "{{ lan_cidr_block | ipsubnet(24, vnf_number|int - 1) | ipaddr(2) }}"
-        wan_gateway: "{{ lan_cidr_block | ipsubnet(24, vnf_number|int - 1) | ipaddr(1) }}"
+        south_route: "{{ south_cidr | ipaddr(2) }}"
+        north_ip: "{{ test_cidr_block | ipsubnet(24, vnf_number|int - 1) | ipaddr(2) }}"
+        north_gateway: "{{ test_cidr_block | ipsubnet(24, vnf_number|int - 1) | ipaddr(1) }}"
+
+    - name: Calculate North Address (first)
+      set_fact:
+        north_ip: "{{ north_cidr | ipaddr(2) }}"
+        north_gateway: "{{ north_cidr | ipaddr(1) }}"
+      when: vnf_number|int == 1
+
+    - name: Calculate South address
+      set_fact:
+        south_ip: "{{ south_cidr | ipaddr(1) }}"
+      when: vnf_number != vnf_total
+
+    - name: Calculate South address (last snake)
+      set_fact:
+        south_ip: "{{ south_cidr | ipaddr(2) }}"
+      when: vnf_number == vnf_total
+
 
 #    - debug:
-#        msg: "{{ vnf_number }}/{{ vnf_total }} vnf: {{ inventory_hostname }}, wan_net: {{ wan_net }}, lan_net: {{ lan_net }}, lan_cidr: {{ lan_cidr }}"
+#        msg: "{{ vnf_number }}/{{ vnf_total }} vnf: {{ inventory_hostname }}, north_net: {{ north_net }}, south_net: {{ south_net }}, south_cidr: {{ south_cidr }}"
 
     - name: Build snake bridges
       nfvis_bridge:
         host: "{{ hostvars['dut'].ansible_host }}"
         user: "{{ ansible_user }}"
         password: "{{ ansible_password }}"
-        name: "{{ lan_net }}_br"
+        name: "{{ south_net }}_br"
         state: "{{ state }}"
       register: results
-      when: lan_net != test_lan_net
+      when: south_net != test_south_net
 
     - name: Build snake networks
       nfvis_network:
         host: "{{ hostvars['dut'].ansible_host }}"
         user: "{{ ansible_user }}"
         password: "{{ ansible_password }}"
-        name: "{{ lan_net }}"
-        bridge: "{{ lan_net }}_br"
+        name: "{{ south_net }}"
+        bridge: "{{ south_net }}_br"
         state: "{{ state }}"
       register: results
-      when: lan_net != test_lan_net
+      when: south_net != test_south_net
 
     - set_fact:
         interfaces:
           GigabitEthernet2:
             enabled: true
             ip:
-              primary: "{{ wan_ip }}"
-              gateway: "{{ wan_gateway | ipaddr('address') }}"
+              primary: "{{ north_ip }}"
+              gateway: "{{ north_gateway | ipaddr('address') }}"
 
           GigabitEthernet3:
             enabled: true
             ip:
-              primary: "{{ lan_ip }}"
+              primary: "{{ south_ip }}"
         router:
           ospf:
             id: 1
-            router_id: "{{ wan_ip }}"
+            router_id: "{{ north_ip }}"
             default_information_originate: true
             networks:
-              - network: "{{ wan_cidr }}"
+              - network: "{{ north_cidr }}"
                 area: 0
-              - network: "{{ lan_cidr }}"
+              - network: "{{ south_cidr }}"
                 area: 0
 
 #    - set_fact:
@@ -130,7 +201,7 @@
 #          global:
 #            - network: "{{ dest_lan_cidr }}"
 #              fwd_list:
-#                - fwd: "{{ lan_route }}"
+#                - fwd: "{{ south_route }}"
 #      when: vnf_number < vnf_total
 #
 #    - debug:
@@ -153,8 +224,8 @@
         flavor: "{{ vnf_flavor }}"
         interfaces:
           - network: int-mgmt-net
-          - network: "{{ wan_net }}"
-          - network: "{{ lan_net }}"
+          - network: "{{ north_net }}"
+          - network: "{{ south_net }}"
         bootup_time: 600
         port_forwarding:
           - proxy_port: "{{ 21000 + vnf_number|int }}"

@@ -11,8 +11,8 @@
     - name: Build VLANs
       nfvis_vlan:
         host: "{{ ansible_host }}"
-        user: "{{ ansible_user }}"
-        password: "{{ ansible_password }}"
+        user: "{{ nfvis_user }}"
+        password: "{{ nfvis_password }}"
         state: "{{ state }}"
         vlan_id: "{{ item }}"
       loop: "{{ nfvis_vlans | default([]) }}"
@@ -30,8 +30,8 @@
     - name: Build Bridges
       nfvis_bridge:
         host: "{{ ansible_host }}"
-        user: "{{ ansible_user }}"
-        password: "{{ ansible_password }}"
+        user: "{{ nfvis_user }}"
+        password: "{{ nfvis_password }}"
         name: "{{ item.key }}"
         port: "{{ item.value.port | default(omit) }}"
         state: "{{ state }}"
@@ -41,8 +41,8 @@
     - name: Build Networks
       nfvis_network:
         host: "{{ ansible_host }}"
-        user: "{{ ansible_user }}"
-        password: "{{ ansible_password }}"
+        user: "{{ nfvis_user }}"
+        password: "{{ nfvis_password }}"
         name: "{{ item.key }}"
         bridge: "{{ item.value.bridge }}"
         trunk: "{{ item.value.trunk | default(omit) }}"
@@ -75,3 +75,15 @@
         bootup_time: "{{ nfvis.bootup_time | default(omit) }}"
         port_forwarding: "{{ nfvis.port_forwarding | default(omit) }}"
         config_data: "{{ nfvis.config_data | default(omit) }}"
+        
+- hosts: vnf
+  gather_facts: no
+  tags:
+    - wait
+  tasks:
+    - name: Wait for VNFs to boot (timeout 10min)
+      wait_for:
+        port: "{{ nfvis_port | default('22') }}"
+        host: "{{ nfvis_host if nfvis_port is defined else ansible_host }}"
+        timeout: 600
+      delegate_to: localhost

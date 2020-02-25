@@ -5,11 +5,35 @@
   tags:
     - wait
   tasks:
+    - debug:
+        var: ansible_host
     - wait_for:
         port: "{{ ansible_port | default('22') }}"
         host: "{{ ansible_host }}"
         timeout: 600
-      delegate_to: localhost
+      delegate_to: control
+
+- name: Enable NAT
+  hosts: control
+  become: yes
+  tasks:
+    - name: Enable IPv4 forwarding
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: yes
+
+    - name: Create Iptables NAT chain
+      iptables:
+        table: nat
+        chain: POSTROUTING
+        out_interface: eth0
+        source: 0.0.0.0/0
+        destination: 0.0.0.0/0
+        jump: MASQUERADE
+        protocol: all
 
 - name: Prep the test hosts
   hosts: test_host
@@ -19,28 +43,41 @@
     - control
   vars:
     package_list:
-      - libiperf0_3.1.3-1_amd64.deb
-      - iperf3_3.1.3-1_amd64.deb
+      - iperf3-3.1.7-2.el7.x86_64.rpm
+
   tasks:
-    - name: Copy .deb packages
+    - name: Copy packages
       copy:
         src: "{{ item }}"
         dest: /tmp
       loop: "{{ package_list }}"
 
-    - name: Disable apt auto updates
-      systemd:
-        name: "{{ item }}"
-        state: stopped
-        enabled: no
-      loop:
-        - apt-daily.timer
-        - apt-daily-upgrade.timer
+    # - name: Disable apt auto updates
+    #   systemd:
+    #     name: "{{ item }}"
+    #     state: stopped
+    #     enabled: no
+    #   loop:
+    #     - apt-daily.timer
+    #     - apt-daily-upgrade.timer
 
-    - name: Install .deb packages
-      command: dpkg -i  "/tmp/{{ item }}"
+    # - name: Install .deb packages
+    #   command: dpkg -i  "/tmp/{{ item }}"
+    #   loop: "{{ package_list }}"
+    #   register: dpkg
+
+    # - name: Disable repositories
+    #   yum_repository:
+    #     name: '*'
+    #     state: absent
+
+    - name: Install packages
+      yum:
+        name: "/tmp/{{ item }}"
+        update_cache: no
+        state: installed
+        disablerepo: "*"
       loop: "{{ package_list }}"
-      register: dpkg
 
 - name: Prep the test hosts
   hosts: test_host

@@ -67,5 +67,206 @@
 				"ovsdhcp": false
 			}
 		]
+	},
+	{
+		"PIDNAME": "Express-BD7",
+		"Manufacturer": "Adlink Technology Inc.",
+		"InstallDrivePartition": "sda",
+		"NetworkDevices": [
+			{
+				"name": "eth0",
+				"pci_slot": "0000:08:00.0",
+				"ovsdhcp": true
+			},
+			{
+				"name": "eth1",
+				"pci_slot": "0000:06:00.0",
+				"ovsdhcp": false
+			},
+			{
+				"name": "eth3",
+				"pci_slot": "0000:03:00.0",
+				"ovsdhcp": false
+			},
+			{
+				"name": "eth4",
+				"pci_slot": "0000:03:00.1",
+				"ovsdhcp": false
+			}
+		]
+	},
+	{
+		"PIDNAME": "IAS-FIBER",
+		"Manufacturer": "IAS-SubU",
+		"InstallDrivePartition": "sda",
+		"NetworkDevices": [
+			{
+				"name": "sfp0",
+				"pci_slot": "0000:08:00.0",
+				"ovsdhcp": true
+			},
+			{
+				"name": "sfp1",
+				"pci_slot": "0000:08:00.1",
+				"ovsdhcp": false
+			},
+			{
+				"name": "sfp2",
+				"pci_slot": "0000:08:00.2",
+				"ovsdhcp": false
+			},
+			{
+				"name": "sfp3",
+				"pci_slot": "0000:08:00.3",
+				"ovsdhcp": false
+			},
+			{
+				"name": "sfp4",
+				"pci_slot": "0000:0a:00.0",
+				"ovsdhcp": false
+			},
+			{
+				"name": "sfp5",
+				"pci_slot": "0000:0a:00.1",
+				"ovsdhcp": false
+			},
+			{
+				"name": "sfp6",
+				"pci_slot": "0000:0a:00.2",
+				"ovsdhcp": false
+			},
+			{
+				"name": "sfp7",
+				"pci_slot": "0000:0a:00.3",
+				"ovsdhcp": false
+			},
+			{
+				"name": "sfp8",
+				"pci_slot": "0000:03:00.0",
+				"ovsdhcp": false
+			},
+			{
+				"name": "sfp9",
+				"pci_slot": "0000:03:00.1",
+				"ovsdhcp": false
+			},
+			{
+				"name": "sfp10",
+				"pci_slot": "0000:03:00.2",
+				"ovsdhcp": false
+			},
+			{
+				"name": "sfp11",
+				"pci_slot": "0000:03:00.3",
+				"ovsdhcp": false
+			},
+			{
+				"name": "sfp12",
+				"pci_slot": "0000:05:00.0",
+				"ovsdhcp": false
+			},
+			{
+				"name": "sfp13",
+				"pci_slot": "0000:05:00.1",
+				"ovsdhcp": false
+			},
+			{
+				"name": "sfp14",
+				"pci_slot": "0000:05:00.2",
+				"ovsdhcp": false
+			},
+			{
+				"name": "sfp15",
+				"pci_slot": "0000:05:00.3",
+				"ovsdhcp": false
+			}
+		]
+	},
+	{
+		"PIDNAME": "IAS-ETH18",
+		"Manufacturer": "IAS-SubU",
+		"InstallDrivePartition": "sda",
+		"NetworkDevices": [
+			{
+				"name": "et0",
+				"pci_slot": "0000:08:00.0",
+				"ovsdhcp": true
+			},
+			{
+				"name": "et1",
+				"pci_slot": "0000:08:00.1",
+				"ovsdhcp": false
+			},
+			{
+				"name": "et2",
+				"pci_slot": "0000:08:00.2",
+				"ovsdhcp": false
+			},
+			{
+				"name": "et3",
+				"pci_slot": "0000:08:00.3",
+				"ovsdhcp": false
+			},
+			{
+				"name": "et4",
+				"pci_slot": "0000:0a:00.0",
+				"ovsdhcp": false
+			},
+			{
+				"name": "et5",
+				"pci_slot": "0000:0a:00.1",
+				"ovsdhcp": false
+			},
+			{
+				"name": "et6",
+				"pci_slot": "0000:0a:00.2",
+				"ovsdhcp": false
+			},
+			{
+				"name": "et7",
+				"pci_slot": "0000:0a:00.3",
+				"ovsdhcp": false
+			},
+			{
+				"name": "et8",
+				"pci_slot": "0000:03:00.0",
+				"ovsdhcp": false
+			},
+			{
+				"name": "et9",
+				"pci_slot": "0000:03:00.1",
+				"ovsdhcp": false
+			},
+			{
+				"name": "et10",
+				"pci_slot": "0000:03:00.2",
+				"ovsdhcp": false
+			},
+			{
+				"name": "et11",
+				"pci_slot": "0000:03:00.3",
+				"ovsdhcp": false
+			},
+			{
+				"name": "et12",
+				"pci_slot": "0000:05:00.0",
+				"ovsdhcp": false
+			},
+			{
+				"name": "et13",
+				"pci_slot": "0000:05:00.1",
+				"ovsdhcp": false
+			},
+			{
+				"name": "et14",
+				"pci_slot": "0000:05:00.2",
+				"ovsdhcp": false
+			},
+			{
+				"name": "et15",
+				"pci_slot": "0000:05:00.3",
+				"ovsdhcp": false
+			}
+		]
 	}
 ]

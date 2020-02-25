@@ -13,15 +13,36 @@ nfvis_package_list:
     image: asav9101.qcow2
     version: 9.10.1
     template: asav.image_properties.xml.j2
-  - name: ubuntu
-    image: ubuntu_18.04.img
-    version: 18.04
-    template: ubuntu.image_properties.xml.j2   
-#  - name: vedge
-#    image: viptela-edge-18.4.0-genericx86-64.qcow2
-#    version: 18.4.0
-#    template: vedge.image_properties.xml.j2
-#  - name: centos
-#    image: CentOS-7-x86_64-GenericCloud-1901.qcow2
-#    version: 1901
-#    template: centos.image_properties.xml.j2
+  - name: asav_9.12.12-interim
+    image: asav9-12-2-9.qcow2
+    version: 9.12.2-interim
+    template: asav.image_properties.xml.j2
+  - name: asav_9.12.3
+    image: asav9-12-3.qcow2
+    version: 9.12.3
+    template: asav.image_properties.xml.j2
+  - name: asav_9.8.4
+    image: asav984.qcow2
+    version: 9.8.4
+    template: asav.image_properties.xml.j2
+  # - name: ubuntu
+  #   image: ubuntu_18.04.img
+  #   version: 18.04
+  #   template: ubuntu.image_properties.xml.j2   
+  # - name: vedge_18.4.1
+  #   image: viptela-edge-18.4.0-genericx86-64.qcow2
+  #   version: 18.4.1
+  #   template: vedge.image_properties.xml.j2
+  # - name: centos
+  #   image: CentOS-7-x86_64-GenericCloud-1901.qcow2
+  #   version: 1901
+  #   template: centos.image_properties.xml.j2
+  #- name: fedora
+  #  image: Fedora-Cloud-Base-28-1.1.x86_64.qcow2
+  #  version: 28
+  #  template: fedora.image_properties.xml.j2
+
+  - name: centos8
+    image: CentOS-8-GenericCloud-8.1.1911-20200113.3.x86_64.qcow2
+    version: 8.9.1911
+    template: centos.image_properties.xml.j2

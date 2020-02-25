@@ -1,9 +1,11 @@
 - hosts: dut
-  connection: local
+  #connection: local
   gather_facts: no
   vars:
     state: present
     snake_tag: snake
+    ansible_ssh_user: centos
+    delegate: "{{ hostvars['control'].ansible_host }}"
   roles:
     - ansible-nfvis
   tasks:
@@ -13,6 +15,7 @@
       user: "{{ ansible_user }}"
       password: "{{ ansible_password }}"
     register: nfvis_facts
+    delegate_to: "{{ delegate }}"
 
   - set_fact:
       search_string: "^{{ snake_tag }}-"

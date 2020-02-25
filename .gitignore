@@ -1,2 +1,4 @@
+*.retry
 /images/*
-/group_vars/all/local.yml
+group_vars/all/local.yml
+*_results.json

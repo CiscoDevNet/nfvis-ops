@@ -1,0 +1,18 @@
+#jinja2: lstrip_blocks: True, trim_blocks: True
+worker_processes 1;
+
+events { worker_connections 1024; }
+
+http {
+#    include    mime.types;
+    sendfile on;
+    server {
+        root {{ pxe_root }};
+        autoindex on;
+        server_name localhost;
+        listen 80;
+        location / {
+            autoindex on;
+        }
+    }
+}

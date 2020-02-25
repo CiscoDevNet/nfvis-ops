@@ -1,0 +1,37 @@
+#jinja2: lstrip_blocks: True, trim_blocks: True
+{% if pxe_dhcp_range == 'static' %}
+dhcp-range={{ pxe_dhcp_network }},static
+{% else %}
+dhcp-range={{ pxe_dhcp_range }}
+{% endif %}
+{% if pxe_dhcp_gateway is defined and pxe_dhcp_gateway|length %}
+dhcp-option=option:router,{{ pxe_dhcp_gateway }}
+{% endif %}
+{% for host in groups.dut_host %}
+{%  if hostvars[host].pxe_mac is defined %}
+dhcp-host={{ hostvars[host].pxe_mac }},{{ hostvars[host].pxe_ip | default(hostvars[host].ansible_host) }}
+{%  endif %}
+{% endfor %}
+
+# Test for the architecture of a netboot client. PXE clients are
+# supposed to send their architecture as option 93. (See RFC 4578)
+# BIOS x86
+dhcp-match=x86PC, option:client-arch, 0
+# EFI x86-64
+dhcp-match=BC_EFI, option:client-arch, 7 #EFI x86-64
+
+# Load different PXE boot image depending on client architecture
+# pxe-service=tag:x86PC,X86PC, "Install Linux on x86 legacy BIOS", pxelinux
+# pxe-service=tag:BC_EFI,BC_EFI, "Install Linux on x86-64 UEFI", BOOTX64.EFI
+
+# Set boot file name only when tag is "bios" or "uefi"
+# for Legacy BIOS detected by dhcp-match above
+dhcp-boot=tag:x86PC,pxelinux.0
+# for UEFI arch detected by dhcp-match above
+dhcp-boot=tag:BC_EFI,BOOTX64.EFI
+
+# Enable dnsmasq's built-in TFTP server
+enable-tftp
+
+# Set the root directory for files available via FTP.
+tftp-root={{ pxe_root }}

@@ -1,0 +1,12 @@
+ansible_host: "{{ hostvars['harness'].ansible_host }}"
+ansible_port: 20012
+ansible_user: centos
+interfaces:
+  eth1:
+    enabled: true
+    ip:
+      primary: "{{ test_wan_cidr | ipaddr('net') | ipaddr('10') }}"
+      #gateway: "{{ test_wan_cidr | ipaddr('net') | ipaddr('1') | ipaddr('address')}}"
+    routes:
+      - network: "{{ test_lan_cidr | ipaddr('net') }}"
+        gateway: "{{ test_wan_cidr | ipaddr('net') | ipaddr('2') | ipaddr('address')}}"

@@ -1,0 +1,22 @@
+ansible_host: 192.133.177.28
+ansible_user: centos
+interfaces:
+  eth0:
+    enabled: true
+    ip:
+      primary: 192.133.177.28/25
+      gateway: 192.133.177.1
+  eth1:
+    enabled: true
+    ip:
+      primary: "{{ test_lan_cidr | ipaddr('net') | ipaddr('1') }}"
+  eth2:
+    enabled: true
+    ip:
+      primary: "{{ test_wan_cidr | ipaddr('net') | ipaddr('1') }}"
+pxe_dhcp_interface: eth1
+pxe_dhcp_network: "{{ interfaces[pxe_dhcp_interface].ip.primary | ipaddr('network') }}"
+pxe_dhcp_gateway: "{{ interfaces[pxe_dhcp_interface].ip.primary | ipaddr('address') }}"
+# For a range:
+#  pxe_dhcp_range: 192.168.0.50,192.168.0.150,12h
+pxe_dhcp_range: static

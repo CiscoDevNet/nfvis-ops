@@ -30,11 +30,11 @@ hosts for testing (e.g. source/sync hosts, viptela control plane, etc.)
 > * `image_dir`: The directory that contains the ISO images (default: `./images`)
 > * `tmp_dir`: The temp directory in which the ISO is created (default: `/tmp`)
 > * `old_iso`: The original ISO
-> * `new_iso`: The new ISO (default: `{{ image_dir }}/nfvis_3phw.iso`)
+> * `new_iso`: The new ISO (default: `nfvis_3phw.iso`)
 > * `nfvis_3phw`: The name of the 3rd party hardware JSON file (default: `nfvis_3phw.json`) 
 > * `volume_id`: (default: `NFVIS3PHW`)
 > ```bash
-> ./build-iso.sh -e old_iso=images/Cisco_NFVIS_BRANCH-3.12.0-257-20190707_165719.iso -e volume_id=NFVIS3PHW_3.12.0
+> ./build-iso.sh -e old_iso=Cisco_NFVIS_BRANCH-3.12.0-257-20190707_165719.iso -e volume_id=NFVIS3PHW_3.12.0
 > ```
 
 ## Provisioning the Harness
@@ -45,8 +45,6 @@ In order to interact with the harness, IP information must be set in harness/har
 
 * `harness`: Set the values for `ansible_host` and `interfaces.mgmt.ip`. Generally, these values will be the same (with prefix added to the latter) if you want to manage the device via the mgmt interface.
 * `dut`: Set the values for `ansible_host` and `interfaces.mgmt.ip`. Generally, these values will be the same (with prefix added to the latter) if you want to manage the device via the mgmt interface.
-* `test-rtr`: Set the values for `ansible_host`, `ansible_port` and `interfaces.GigabitEthernet2.ip`.  If you want to manage through the
-Harness' mgmt interface, set `ansible_host` to the Harness' mgmt IP address and `ansible_port` the forwarding port.  `interfaces.GigabitEthernet2.ip` must be an IP address that is reacable by a licensing server if licensing is required.
 
 ### Building Packages
 
@@ -100,7 +98,7 @@ configuration for the architecture.  They can also be automated post deployment 
 ### Build Architecture
 
 ```bash
-ansible-playbook build.yml -i harness/isr_asa1.yml
+ansible-playbook build.yml -i harness/isr_asa1.yml 
 ```
 
 ### Test Architecture
@@ -117,8 +115,9 @@ ansible-playbook iperf-test.yml -i harness/harness.yml -e time=10
 ### Clean Architecture
 
 ```bash
-ansible-playbook clean.yml -i harness/isr_asa1.yml
+ansible-playbook clean.yml -i harness/isr_asa1.yml -l dut,vnf
 ```
+>Note: must limit, otherwise you will get failures when trying to delete networks from the harness
 
 ## Load Testing
 

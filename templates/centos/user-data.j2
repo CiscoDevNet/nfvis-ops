@@ -1,0 +1,13 @@
+#cloud-config
+chpasswd: { expire: False }
+password: {{ ansible_password }}
+ssh_authorized_keys:
+- ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBgAYpsOJL0d+KAOldJPlCM2almpzYvat9Zj3wzTcl1F jlothian@cisco.com
+ssh_pwauth: True
+# timezone: US/Pacific
+# users:
+# - default
+#network-interfaces: |
+#  iface eth0 inet static
+#  address ${NICID_0_IP_ADDRESS}
+#  netmask ${NICID_0_NETMASK}

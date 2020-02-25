@@ -1,0 +1,29 @@
+set default="0"
+
+function load_video {
+  insmod efi_gop
+  insmod efi_uga
+  insmod video_bochs
+  insmod video_cirrus
+  insmod all_video
+}
+
+load_video
+set gfxpayload=keep
+insmod gzio
+insmod part_gpt
+insmod ext2
+
+set timeout=60
+
+menuentry "Local Disk" {
+    exit
+}
+menuentry 'Install Cisco NFV Infrastructure Software' {
+        linuxefi os/images/pxeboot/vmlinuz ip=dhcp method=nfs:{{ ansible_host }}:/pxeroot/os ks=nfs:{{ ansible_host }}:/pxeroot/os/ks.cfg uefi_boot vbranch_nfv
+        initrdefi os/images/pxeboot/initrd.img
+}
+menuentry 'Rescue NFVIS Password' --class fedora --class gnu-linux --class gnu --class os {
+        linuxefi os/images/pxeboot/vmlinuz rd.live.ram rescue quiet
+        initrdefi os/images/pxeboot/initrd.img
+}

@@ -1,37 +1,33 @@
 all:
   hosts:
     dut:
-      ansible_host: 192.133.177.26
-      nfvis_bridges:
-        service:
-      nfvis_networks:
-        service:
-          bridge: service
   children:
     nfvis:
       hosts:
         harness:
         dut:
     vnf:
+      vars:
+        nfvis_host: "{{ hostvars['dut'].ansible_host }}"
       hosts:
         isrv1:
-          ansible_port: 21001
+          nfvis_port: 21001
           ansible_network_os: ios
           interfaces:
             GigabitEthernet2:
               enabled: true
               ip:
-                primary: 192.168.0.2/24
-                gateway: 192.168.0.1
+                primary: "{{ test_wan_cidr | ipaddr(2) }}"
+                gateway: "{{ test_wan_cidr | ipaddr(1) | ipaddr('address') }}"
             GigabitEthernet3:
               enabled: true
               ip:
-                primary: 192.168.1.1/24
+                primary: "{{ service_cidr | ipaddr(1) }}"
           static_routes:
             global:
-              - network: 192.168.255.0/24
+              - network: "{{ test_lan_cidr }}"
                 fwd_list:
-                  - fwd: 192.168.1.2
+                  - fwd: "{{ service_cidr | ipaddr(2) | ipaddr('address') }}"
           nfvis:
             name: "{{ inventory_hostname }}"
             host: "{{ hostvars['dut'].ansible_host }}"
@@ -45,13 +41,13 @@ all:
               - network: test-wan
               - network: service
             port_forwarding:
-              - proxy_port: "{{ ansible_port }}"
-                source_bridge: 'wan-br'
+              - proxy_port: "{{ nfvis_port }}"
+                source_bridge: "{{ dut_mgmt_br }}"
             config_data:
               - dst: iosxe_config.txt
                 data: "{{ lookup('template', 'ios/nfvis.j2') }}"
         asav1:
-          ansible_port: 21002
+          nfvis_port: 21002
           ansible_network_os: asa
           interfaces:
             GigabitEthernet0/0:
@@ -59,18 +55,18 @@ all:
               nameif: outside
               security_level: 0
               ip:
-                primary: 192.168.1.2/24
+                primary: "{{ service_cidr | ipaddr(2) }}"
             GigabitEthernet0/1:
               enabled: true
               nameif: inside
               security_level: 0
               ip:
-                primary: 192.168.255.1/24
+                primary: "{{ test_lan_cidr | ipaddr(2) }}"
           static_routes:
             outside:
-              - network: 192.168.0.0/24
+              - network: "{{ test_wan_cidr }}"
                 fwd_list:
-                  - fwd: 192.168.1.1
+                  - fwd: "{{ service_cidr | ipaddr(1) | ipaddr('address') }}"
 
           nfvis:
             name: "{{ inventory_hostname }}"
@@ -83,8 +79,8 @@ all:
               - network: service
               - network: test-lan
             port_forwarding:
-              - proxy_port: "{{ ansible_port }}"
-                source_bridge: 'wan-br'
+              - proxy_port: "{{ nfvis_port }}"
+                source_bridge: "{{ dut_mgmt_br }}"
             config_data:
               - dst: day0-config
                 data: "{{ lookup('template', 'asa/nfvis.j2') }}"
