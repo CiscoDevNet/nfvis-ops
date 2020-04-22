@@ -7,6 +7,7 @@
   vars:
     time: 60
     dest: hostwan1
+    test_tag: "{{ test_name | default('default') }}"
   tags:
     - perf
   tasks:
@@ -34,8 +35,37 @@
           nfvis_facts: "{{ nfvis_facts }}"
           iperf_data: "{{ iperf_data }}"
 
+    - name: Create summary
+      set_fact:
+        test_report_summary:
+          test_environment:
+            manufacturer: "{{ nfvis_facts['platform-detail']['hardware_info']['Manufacturer'] }}"
+            model: "{{ nfvis_facts['platform-detail']['hardware_info']['PID'] }}"
+            bios_version: "{{ nfvis_facts['platform-detail']['hardware_info']['BIOS-Version'] }}"
+            nfvis_version: "{{ nfvis_facts['platform-detail']['hardware_info']['Version'] }}"
+            iperf_version: "{{ iperf_data['start']['version'] }}"
+            iperf_streams: "{{ iperf_data['start']['test_start']['num_streams'] }}"
+            iperf_duration: "{{ iperf_data['start']['test_start']['duration'] }}"
+            memory: "{{ nfvis_facts['platform-detail']['hardware_info']['Memory_Information'] }}"
+            cpu: "{{ nfvis_facts['platform-detail']['hardware_info']['CPU_Information'] }}"
+            cpu_cores_per_socket: "{{ nfvis_facts['cpu-info']['cores-per-socket'] }}"
+            cpu_sockets: "{{ nfvis_facts['cpu-info']['total-sockets'] }}"
+            cpu_logical_cpus: "{{ nfvis_facts['cpu-info']['total-logical-cpus'] }}"
+            num_snakes: "{{ nfvis_facts | json_query('deployments.deployment[*]') | count }}"
+          test_results:
+            test_name: "{{ test_tag }}"
+            timestamp: "{{ iperf_data['start']['timestamp']['time'] }}"
+            receiver_bps: "{{ iperf_data['end']['sum_received']['bits_per_second'] }}"
+            sender_bps: "{{ iperf_data['end']['sum_sent']['bits_per_second'] }}"
+
     - name: Write out report
       copy:
-        dest: "{{ nfvis_facts['platform-detail']['hardware_info']['PID'] }}_isr-asr_results.json"
+        dest: "results/{{ nfvis_facts['platform-detail']['hardware_info']['PID'] }}_{{ test_tag }}_results.json"
         content: "{{ test_report | to_nice_json }}"
+      delegate_to: localhost
+
+    - name: Write out summary
+      copy:
+        dest: "results/{{ nfvis_facts['platform-detail']['hardware_info']['PID'] }}_{{ test_tag}}_summary.yaml"
+        content: "{{ test_report_summary | to_nice_yaml }}"
       delegate_to: localhost

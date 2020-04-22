@@ -1,5 +1,47 @@
 [
 	{
+		"PIDNAME": "M3-SE-SVR4I",
+		"Manufacturer": "Dtech Labs",
+		"InstallDrivePartition": "sda",
+		"NetworkDevices": [
+			{
+				"name": "mgmt0",
+				"pci_slot": "net",
+				"ovsdhcp": false
+			},
+			{
+				"name": "ge0",
+				"pci_slot": "0000:02:00.0",
+				"ovsdhcp": true
+			},
+			{
+				"name": "ge1",
+				"pci_slot": "0000:02:00.1",
+				"ovsdhcp": false
+			},
+			{
+				"name": "ge2",
+				"pci_slot": "0000:02:00.2",
+				"ovsdhcp": false
+			},
+			{
+				"name": "ge3",
+				"pci_slot": "0000:02:00.3",
+				"ovsdhcp": false
+			},
+			{
+				"name": "te0",
+				"pci_slot": "0000:01:00.0",
+				"ovsdhcp": false
+			},
+			{
+				"name": "te1",
+				"pci_slot": "0000:01:00.1",
+				"ovsdhcp": false
+			}
+		]
+	},
+	{
 		"PIDNAME": "M3-SE-VSVR5-P",
 		"Manufacturer": "Dtech Labs",
 		"InstallDrivePartition": "sda",

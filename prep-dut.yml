@@ -1,0 +1,28 @@
+- hosts: dut
+  gather_facts: no
+  connection: local
+  vars:
+    state: present
+    ansible_ssh_user: centos
+  tags:
+    - packages
+    - upload
+  roles:
+    - ansible-nfvis
+  tasks:
+    - name: Limit to specific package
+      set_fact:
+        nfvis_package_list: "{{ nfvis_package_list | selectattr('name', 'equalto', package) | list }}"
+      when: package is defined
+
+    - name: Package
+      nfvis_package:
+        host: "{{ ansible_host }}"
+        user: "{{ ansible_user }}"
+        password: "{{ ansible_password }}"
+        file: "{{ nfvis_package_dir }}/{{ item.name }}.tar.gz"
+        name: "{{ item.name }}"
+        state: "{{ item.state | default(state) }}"
+        dest: "/data/intdatastore/uploads"
+      register: upload_results
+      loop: "{{ nfvis_package_list }}"
