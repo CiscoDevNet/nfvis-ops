@@ -69,6 +69,17 @@
       vnf_total: "{{ num_snakes }}"
     with_sequence: start=1 end="{{ num_snakes }}"
 
+  - name: Build Bridges
+    nfvis_bridge:
+      host: "{{ ansible_host }}"
+      user: "{{ nfvis_user }}"
+      password: "{{ nfvis_password }}"
+      name: "{{ item.key }}"
+      port: "{{ item.value.port | default(omit) }}"
+      state: "{{ state }}"
+    register: results
+    with_dict: "{{ nfvis_bridges | default({}) }}"
+
   - name: Build Networks
     nfvis_network:
       host: "{{ ansible_host }}"

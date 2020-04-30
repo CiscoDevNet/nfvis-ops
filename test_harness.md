@@ -95,10 +95,18 @@ The scenarios are created through Ansible inventory files that include the assoc
 and the VNFs.  The VNFs are seeded with a template-driven boot-up configuration so that they come up with the required
 configuration for the architecture.  They can also be automated post deployment for more complex deployment scenarios (e.g. setting up the SD-WAN).
 
+### Prepare the DUT
+
+* Copies VNF images to DUT
+
+```bash
+./play.sh prep-dut.yml -i harness/harness.yml
+```
+
 ### Build Architecture
 
 ```bash
-ansible-playbook build.yml -i harness/isr_asa1.yml 
+./play.sh build.yml -i harness/isr_asa1.yml 
 ```
 
 ### Test Architecture
@@ -106,11 +114,11 @@ ansible-playbook build.yml -i harness/isr_asa1.yml
 * Runs iperf test from test host to control host
 
 ```bash
-ansible-playbook iperf-test.yml -i harness/harness.yml -e time=10
+./play.sh iperf-test.yml -i harness/harness.yml -e time=30 -e test_name=asr-isr
 ```
 >Note: The harness inventory is specificed because the test us run between harness VNFs
 
->Note: iperf testing is limited by the licesned limit of the VNFs.
+>Note: iperf testing is limited by the license limit of the VNFs.
 
 ### Clean Architecture
 
@@ -135,12 +143,20 @@ depends on the cores available on the DUT (i.e. 1 ISRv per core, but configurabl
 
 ![test_harness](snake_test.png)
 
+### Prepare the DUT
+
+>Note: this is not necessary if you already prepared it for the ISR/ASR test
+```bash
+./play.sh prep-dut.yml -i harness/harness.yml
+```
 ### Build the Snake
 
 * Finds available cores
 * Creates VNFs, bridges, & networks
 
-`ansible-playbook build_snake.yml`
+```bash
+./play.sh -i harness/harness build_snake.yml
+```
 
 > **Extra Vars**
 >
@@ -167,15 +183,14 @@ ansible-playbook prep-snake.yml
 * Runs iperf test from test host to control host
 
 ```bash
-ansible-playbook iperf-test.yml -i harness/harness.yml
+./play.sh iperf-test.yml -i harness/harness.yml -e test_name=snake
 ```
 
 > **Extra Vars**
 >
 > * `time`: The duration of the iperf test (default: 60)
->
 >```bash
-> ansible-playbook iperf-test.yml -i harness/harness.yml -e time=600
+>./play.sh iperf-test.yml -i harness/harness.yml -e time=30 -e test_name=snake
 >```
 
 ### Clean the Snake
@@ -188,3 +203,20 @@ ansible-playbook iperf-test.yml -i harness/harness.yml
 ```bash
 ansible-playbook clean-snake.yml
 ```
+
+## Provisioning an NFVIS DUT using PXE
+
+When deploying the test harness, a Linux control node is deployed on the harness host.  This host is used to provide NAT for the test VNFs, as well as the VNFs on the DUT (needed for Smart Licensin).  We have also provided scripts to enable the control node to act as a PXE server to the DUT.  If you build the NFVIS ISO as outlined above, you can provision the control host as a PXE server like this:
+
+```bash
+./play.sh  -i harness/harness.yml configure-pxe.yml
+```
+
+For this to function correctly, you must have the following variables defined for your DUT:
+```yaml
+netmask: 24
+pxe_mac: "00:aa:bb:cc:dd:ee"
+pxe_ip: "{{ test_lan_cidr | ipaddr('net') | ipaddr('5') | ipaddr('address') }}
+```
+
+Once everything is setup, set your DUT to PXE boot from its WAN interface and NFVIS should install onto the first hard drive.

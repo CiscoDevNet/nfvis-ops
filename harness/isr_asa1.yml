@@ -6,6 +6,7 @@ all:
       hosts:
         harness:
         dut:
+        control:
     vnf:
       vars:
         nfvis_host: "{{ hostvars['dut'].ansible_host }}"
